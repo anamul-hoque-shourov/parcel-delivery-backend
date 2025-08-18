@@ -4,13 +4,13 @@ import Parcel from "../models/parcelModel.js";
 export const getMerchantParcels = async (req, res) => {
   try {
     const parcels = await Parcel.find({ merchant: req.user._id });
-    res.json(parcels);
+    res.status(200).json(parcels);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get a single parcel by ID (owned by merchant)
+// Get a parcel by ID created by the merchant
 export const getMerchantParcelById = async (req, res) => {
   try {
     const parcel = await Parcel.findOne({
@@ -18,13 +18,13 @@ export const getMerchantParcelById = async (req, res) => {
       merchant: req.user._id,
     });
     if (!parcel) return res.status(404).json({ message: "Parcel not found" });
-    res.json(parcel);
+    res.status(200).json(parcel);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Update a parcel (owned by merchant)
+// Update a parcel created by the merchant
 export const updateMerchantParcel = async (req, res) => {
   try {
     const parcel = await Parcel.findOneAndUpdate(
@@ -33,13 +33,13 @@ export const updateMerchantParcel = async (req, res) => {
       { new: true }
     );
     if (!parcel) return res.status(404).json({ message: "Parcel not found" });
-    res.json(parcel);
+    res.status(200).json({ message: "Parcel updated successfully", parcel });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Delete a parcel (owned by merchant)
+// Delete a parcel created by the merchant
 export const deleteMerchantParcel = async (req, res) => {
   try {
     const parcel = await Parcel.findOneAndDelete({
@@ -47,7 +47,7 @@ export const deleteMerchantParcel = async (req, res) => {
       merchant: req.user._id,
     });
     if (!parcel) return res.status(404).json({ message: "Parcel not found" });
-    res.json({ message: "Parcel deleted successfully" });
+    res.status(200).json({ message: "Parcel deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

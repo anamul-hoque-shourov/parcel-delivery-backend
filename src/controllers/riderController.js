@@ -3,7 +3,7 @@ import Parcel from "../models/parcelModel.js";
 export const getAssignedParcels = async (req, res) => {
   try {
     const parcels = await Parcel.find({ assignedRider: req.user._id });
-    res.json(parcels);
+    res.status(200).json(parcels);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

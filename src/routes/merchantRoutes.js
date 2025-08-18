@@ -5,7 +5,10 @@ import {
   updateMerchantParcel,
   deleteMerchantParcel,
 } from "../controllers/merchantController.js";
-import { authMiddleware, authorizeRoles } from "../middlewares/authMiddleware.js";
+import {
+  authMiddleware,
+  authorizeRoles,
+} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

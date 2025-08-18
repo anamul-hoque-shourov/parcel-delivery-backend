@@ -5,7 +5,7 @@ export const createParcel = async (req, res) => {
   try {
     const parcel = new Parcel({
       ...req.body,
-      sender: req.user._id, // assuming user is authenticated and attached to req
+      sender: req.user._id,
     });
     const savedParcel = await parcel.save();
     res.status(201).json(savedParcel);
@@ -17,7 +17,9 @@ export const createParcel = async (req, res) => {
 // Get all parcels (admin/merchant)
 export const getAllParcels = async (req, res) => {
   try {
-    const parcels = await Parcel.find().populate("sender assignedRider merchant");
+    const parcels = await Parcel.find().populate(
+      "sender assignedRider merchant"
+    );
     res.json(parcels);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -27,7 +29,9 @@ export const getAllParcels = async (req, res) => {
 // Get a single parcel by ID
 export const getParcelById = async (req, res) => {
   try {
-    const parcel = await Parcel.findById(req.params.id).populate("sender assignedRider merchant");
+    const parcel = await Parcel.findById(req.params.id).populate(
+      "sender assignedRider merchant"
+    );
     if (!parcel) return res.status(404).json({ message: "Parcel not found" });
     res.json(parcel);
   } catch (error) {
@@ -43,7 +47,8 @@ export const updateParcel = async (req, res) => {
       req.body,
       { new: true }
     );
-    if (!updatedParcel) return res.status(404).json({ message: "Parcel not found" });
+    if (!updatedParcel)
+      return res.status(404).json({ message: "Parcel not found" });
     res.json(updatedParcel);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -54,7 +59,8 @@ export const updateParcel = async (req, res) => {
 export const deleteParcel = async (req, res) => {
   try {
     const deletedParcel = await Parcel.findByIdAndDelete(req.params.id);
-    if (!deletedParcel) return res.status(404).json({ message: "Parcel not found" });
+    if (!deletedParcel)
+      return res.status(404).json({ message: "Parcel not found" });
     res.json({ message: "Parcel deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

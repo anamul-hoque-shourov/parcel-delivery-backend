@@ -1,38 +1,40 @@
-import express from "express";
-import cors from "cors";
-import { config } from "dotenv";
-import dbConnection from "./database/db.js";
-import parcelRoutes from "./routes/parcelRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import riderRoutes from "./routes/riderRoutes.js";
-import merchantRoutes from "./routes/merchantRoutes.js";
+import "./src/configs/env.js";
+import http from "node:http";
+import { Server as SocketIOServer } from "socket.io";
+import app from "./app.js";
+import dbConnection from "./src/database/db.js";
 
-config();
-
-const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+// Create HTTP server and attach Socket.IO
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-app.use(express.json());
+  },
+});
 
-// Routes
-app.use("/api/parcels", parcelRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/riders", riderRoutes);
-app.use("/api/merchants", merchantRoutes);
+// Attach io to app so routes/controllers can use it
+app.set("io", io);
 
-// Database connection and server start
+// Socket.IO events
+io.on("connection", (socket) => {
+  socket.on("joinParcelRoom", (parcelId) => {
+    socket.join(`parcel_${parcelId}`);
+  });
+
+  socket.on("leaveParcelRoom", (parcelId) => {
+    socket.leave(`parcel_${parcelId}`);
+  });
+});
+
+// Start server
 const startServer = async () => {
   try {
     await dbConnection();
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log(
         `Server is running on port ${port} in ${process.env.ENVIRONMENT} environment.`
       );
