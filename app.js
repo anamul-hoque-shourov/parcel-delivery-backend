@@ -1,25 +1,22 @@
-// app.js
 import express from "express";
 import cors from "cors";
+import requestLogger from "./src/middlewares/requestLogger.js";
 import parcelRoutes from "./src/routes/parcelRoutes.js";
-import { logger } from "./src/utils/logger.js";
-import { requestLogger } from "./src/middlewares/requestLogger.js";
+import userRoutes from "./src/routes/userRoutes.js";
 
 const app = express();
 
-// Middleware
 app.use(
   cors({
-    origin: "*", // allow requests from all origins
-    methods: ["GET", "POST", "PUT", "DELETE"], // allowed HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // allowed headers
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());
 app.use(requestLogger);
 
-// app.use(logger);
-// Routes
 app.use("/parcels", parcelRoutes);
+app.use("/users", userRoutes);
 
 export default app;

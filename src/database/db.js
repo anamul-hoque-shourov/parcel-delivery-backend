@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const dbConnection = async () => {
+async function dbConnection() {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
       dbName: "parcel-delivery-management-system",
@@ -10,6 +10,6 @@ const dbConnection = async () => {
     console.error(`Error connecting to database: ${error.message || error}`);
     process.exit(1);
   }
-};
+}
 
 export default dbConnection;

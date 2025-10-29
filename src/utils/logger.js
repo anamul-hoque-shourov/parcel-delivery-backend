@@ -1,21 +1,16 @@
-// src/utils/logger.js
 import fs from "fs";
 import path from "path";
 
-// Path to logs folder inside src
 const logsDir = path.join(process.cwd(), "src", "logs");
 const logFilePath = path.join(logsDir, "app.log");
 
-// Ensure logs folder exists
 if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true }); // create parent folders if needed
+  fs.mkdirSync(logsDir, { recursive: true });
 }
 
-// Helper to format date
 const getTimestamp = () => new Date().toLocaleString();
 
-// Logger object
-export const logger = {
+const logger = {
   info: (message) => {
     const formatted = `[INFO] [${getTimestamp()}]: ${message}`;
     console.log(formatted);
@@ -34,3 +29,5 @@ export const logger = {
     fs.appendFileSync(logFilePath, formatted + "\n");
   },
 };
+
+export default logger;

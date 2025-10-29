@@ -6,7 +6,7 @@ import dbConnection from "./src/database/db.js";
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
-const startServer = async () => {
+async function startServer() {
   try {
     await dbConnection();
 
@@ -19,6 +19,6 @@ const startServer = async () => {
     console.error(`Failed to start server: ${error.message || error}`);
     process.exit(1);
   }
-};
+}
 
 startServer();

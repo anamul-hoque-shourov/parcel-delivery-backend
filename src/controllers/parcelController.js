@@ -1,6 +1,6 @@
-import Parcel from "../models/parcelModel.js";
+import Parcel from "../schemas/parcelSchema.js";
 
-export const createParcel = async (req, res) => {
+export async function createParcel(req, res) {
   try {
     const { sender, receiver, deliveryAddress } = req.body;
     const parcel = new Parcel({
@@ -13,18 +13,18 @@ export const createParcel = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-};
+}
 
-export const getParcels = async (req, res) => {
+export async function getParcels(req, res) {
   try {
     const parcels = await Parcel.find();
     res.json(parcels);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
+}
 
-export const getParcel = async (req, res) => {
+export async function getParcel(req, res) {
   try {
     const parcel = await Parcel.findById(req.params.id);
     if (!parcel) return res.status(404).json({ message: "Parcel not found" });
@@ -32,9 +32,9 @@ export const getParcel = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
+}
 
-export const updateParcel = async (req, res) => {
+export async function updateParcel(req, res) {
   try {
     const updatedParcel = await Parcel.findByIdAndUpdate(
       req.params.id,
@@ -47,9 +47,9 @@ export const updateParcel = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-};
+}
 
-export const deleteParcel = async (req, res) => {
+export async function deleteParcel(req, res) {
   try {
     const deletedParcel = await Parcel.findByIdAndDelete(req.params.id);
     if (!deletedParcel)
@@ -58,4 +58,4 @@ export const deleteParcel = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
+}
