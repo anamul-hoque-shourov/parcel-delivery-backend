@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const dbConnection = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
-      dbName: "zapfast",
+      dbName: "parcel-delivery-management-system",
     });
     console.log("Connected to database");
   } catch (error) {

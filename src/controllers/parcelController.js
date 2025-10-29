@@ -1,11 +1,12 @@
 import Parcel from "../models/parcelModel.js";
 
-// Create a new parcel order
 export const createParcel = async (req, res) => {
   try {
+    const { sender, receiver, deliveryAddress } = req.body;
     const parcel = new Parcel({
-      ...req.body,
-      sender: req.user._id,
+      sender,
+      receiver,
+      deliveryAddress,
     });
     const savedParcel = await parcel.save();
     res.status(201).json(savedParcel);
@@ -14,24 +15,18 @@ export const createParcel = async (req, res) => {
   }
 };
 
-// Get all parcels (admin/merchant)
-export const getAllParcels = async (req, res) => {
+export const getParcels = async (req, res) => {
   try {
-    const parcels = await Parcel.find().populate(
-      "sender assignedRider merchant"
-    );
+    const parcels = await Parcel.find();
     res.json(parcels);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get a single parcel by ID
-export const getParcelById = async (req, res) => {
+export const getParcel = async (req, res) => {
   try {
-    const parcel = await Parcel.findById(req.params.id).populate(
-      "sender assignedRider merchant"
-    );
+    const parcel = await Parcel.findById(req.params.id);
     if (!parcel) return res.status(404).json({ message: "Parcel not found" });
     res.json(parcel);
   } catch (error) {
@@ -39,7 +34,6 @@ export const getParcelById = async (req, res) => {
   }
 };
 
-// Update parcel status or details
 export const updateParcel = async (req, res) => {
   try {
     const updatedParcel = await Parcel.findByIdAndUpdate(
@@ -55,7 +49,6 @@ export const updateParcel = async (req, res) => {
   }
 };
 
-// Delete a parcel
 export const deleteParcel = async (req, res) => {
   try {
     const deletedParcel = await Parcel.findByIdAndDelete(req.params.id);

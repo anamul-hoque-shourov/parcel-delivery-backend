@@ -1,21 +1,18 @@
 import express from "express";
 import {
   createParcel,
-  getAllParcels,
-  getParcelById,
+  getParcels,
+  getParcel,
   updateParcel,
   deleteParcel,
 } from "../controllers/parcelController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.use(authMiddleware);
-
-router.post("/", createParcel); // Create a new parcel
-router.get("/", getAllParcels); // Get all parcels
-router.get("/:id", getParcelById); // Get parcel by ID
-router.put("/:id", updateParcel); // Update parcel
-router.delete("/:id", deleteParcel); // Delete parcel
+router.post("/", createParcel);
+router.get("/", getParcels);
+router.get("/:id", getParcel);
+router.put("/:id", updateParcel);
+router.delete("/:id", deleteParcel);
 
 export default router;
