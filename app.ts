@@ -1,10 +1,10 @@
-import express from "express";
+import express, { Application } from "express";
 import cors from "cors";
-import requestLogger from "./src/middlewares/requestLogger.js";
-import parcelRoutes from "./src/routes/parcelRoutes.js";
-import userRoutes from "./src/routes/userRoutes.js";
+import requestLogger from "@/middlewares/requestLogger";
+import parcelRoutes from "@/routes/parcelRoutes";
+import userRoutes from "@/routes/userRoutes";
 
-const app = express();
+const app: Application = express();
 
 app.use(
   cors({

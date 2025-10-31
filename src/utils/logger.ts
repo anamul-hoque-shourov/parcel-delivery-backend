@@ -8,22 +8,28 @@ if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
 }
 
-const getTimestamp = () => new Date().toLocaleString();
+const getTimestamp = (): string => new Date().toLocaleString();
 
-const logger = {
-  info: (message) => {
+interface Logger {
+  info: (message: string) => void;
+  warn: (message: string) => void;
+  error: (message: string) => void;
+}
+
+const logger: Logger = {
+  info: (message: string) => {
     const formatted = `[INFO] [${getTimestamp()}]: ${message}`;
     console.log(formatted);
     fs.appendFileSync(logFilePath, formatted + "\n");
   },
 
-  warn: (message) => {
+  warn: (message: string) => {
     const formatted = `[WARN] [${getTimestamp()}]: ${message}`;
     console.warn(formatted);
     fs.appendFileSync(logFilePath, formatted + "\n");
   },
 
-  error: (message) => {
+  error: (message: string) => {
     const formatted = `[ERROR] [${getTimestamp()}]: ${message}`;
     console.error(formatted);
     fs.appendFileSync(logFilePath, formatted + "\n");
