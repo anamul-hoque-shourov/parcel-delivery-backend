@@ -5,7 +5,7 @@ dotenv.config();
 
 import http from "http";
 import app from "./app";
-import db from "./src/database/db";
+import db from "./src/config/db";
 
 const port: number = Number(process.env.PORT) || 3000;
 const server = http.createServer(app);

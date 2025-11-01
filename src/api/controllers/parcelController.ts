@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Parcel from "@/schemas/parcelSchema";
+import Parcel from "@/infrastructure/models/parcel_model";
 
 export async function createParcel(req: Request, res: Response): Promise<void> {
   try {
