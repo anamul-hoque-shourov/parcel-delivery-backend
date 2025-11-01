@@ -1,17 +1,18 @@
 import { Request, Response } from "express";
-import Parcel from "@/infrastructure/models/parcel_model";
+import { ParcelService } from "@/application/services/parcel_services";
+
+const parcelService = new ParcelService();
 
 export async function createParcel(req: Request, res: Response): Promise<void> {
   try {
     const { sender, receiver, deliveryAddress } = req.body;
 
-    const parcel = new Parcel({
+    const savedParcel = await parcelService.createParcel({
       sender,
       receiver,
       deliveryAddress,
     });
 
-    const savedParcel = await parcel.save();
     res.status(201).json(savedParcel);
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -24,7 +25,7 @@ export async function createParcel(req: Request, res: Response): Promise<void> {
 
 export async function getParcels(req: Request, res: Response): Promise<void> {
   try {
-    const parcels = await Parcel.find();
+    const parcels = await parcelService.getAllParcels();
     res.json(parcels);
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -37,7 +38,8 @@ export async function getParcels(req: Request, res: Response): Promise<void> {
 
 export async function getParcel(req: Request, res: Response): Promise<void> {
   try {
-    const parcel = await Parcel.findById(req.params.id);
+    const parcel = await parcelService.getParcelById(req.params.id);
+
     if (!parcel) {
       res.status(404).json({ message: "Parcel not found" });
       return;
@@ -54,12 +56,9 @@ export async function getParcel(req: Request, res: Response): Promise<void> {
 
 export async function updateParcel(req: Request, res: Response): Promise<void> {
   try {
-    const updatedParcel = await Parcel.findByIdAndUpdate(
+    const updatedParcel = await parcelService.updateParcel(
       req.params.id,
-      req.body,
-      {
-        new: true,
-      }
+      req.body
     );
 
     if (!updatedParcel) {
@@ -79,8 +78,9 @@ export async function updateParcel(req: Request, res: Response): Promise<void> {
 
 export async function deleteParcel(req: Request, res: Response): Promise<void> {
   try {
-    const deletedParcel = await Parcel.findByIdAndDelete(req.params.id);
-    if (!deletedParcel) {
+    const success = await parcelService.deleteParcel(req.params.id);
+
+    if (!success) {
       res.status(404).json({ message: "Parcel not found" });
       return;
     }

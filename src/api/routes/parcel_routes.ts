@@ -5,7 +5,7 @@ import {
   getParcel,
   updateParcel,
   deleteParcel,
-} from "@/api/controllers/parcelController";
+} from "@/api/controllers/parcel_controller";
 
 const router = express.Router();
 

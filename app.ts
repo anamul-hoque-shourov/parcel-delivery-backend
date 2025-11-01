@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import cors from "cors";
 import requestLogger from "@/api/middlewares/request_logger";
-import parcelRoutes from "@/api/routes/parcelRoutes";
+import parcelRoutes from "@/api/routes/parcel_routes";
 import userRoutes from "@/api/routes/user_routes";
 
 const app: Application = express();

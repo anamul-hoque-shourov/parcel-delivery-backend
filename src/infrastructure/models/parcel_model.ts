@@ -1,23 +1,28 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
-const parcelSchema = new mongoose.Schema(
+export interface IParcelModel extends Document {
+  sender: string;
+  receiver: string;
+  deliveryAddress: string;
+  status: string;
+}
+
+const ParcelSchema: Schema<IParcelModel> = new Schema(
   {
-    sender: {
+    sender: { type: String, required: true },
+    receiver: { type: String, required: true },
+    deliveryAddress: { type: String, required: true },
+    status: {
       type: String,
-      required: true,
-    },
-    receiver: {
-      type: String,
-      required: true,
-    },
-    deliveryAddress: {
-      type: String,
+      enum: ["PENDING", "IN_TRANSIT", "DELIVERED", "CANCELLED"],
+      default: "PENDING",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Parcel = mongoose.model("Parcel", parcelSchema);
-
-export default Parcel;
+export const ParcelModel: Model<IParcelModel> = mongoose.model<IParcelModel>(
+  "Parcel",
+  ParcelSchema
+);
