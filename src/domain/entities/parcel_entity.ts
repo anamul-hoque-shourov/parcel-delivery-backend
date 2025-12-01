@@ -3,5 +3,8 @@ export interface Parcel {
   sender: string;
   receiver: string;
   deliveryAddress: string;
-  status: "PENDING" | "IN_TRANSIT" | "DELIVERED" | "CANCELLED";
+  status: "pending" | "in_transit" | "delivered" | "cancelled";
+  creatorId: string;
+  creatorRole: "merchant" | "user";
+  riderId?: string;
 }

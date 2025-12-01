@@ -2,7 +2,7 @@ import { IParcelRepository } from "@/domain/repositories/i_parcel_repository";
 import { Parcel } from "@/domain/entities/parcel_entity";
 import { ParcelRepository } from "@/infrastructure/repositories/parcel_repository";
 
-type ParcelStatus = "PENDING" | "IN_TRANSIT" | "DELIVERED" | "CANCELLED";
+type ParcelStatus = "pending" | "in_transit" | "delivered" | "cancelled";
 
 const isValidString = (value: string | undefined): boolean =>
   typeof value === "string" && value.trim().length > 0;
@@ -15,7 +15,10 @@ export class ParcelService {
   }
 
   async createParcel(
-    parcelData: Omit<Parcel, "id" | "status">
+    parcelData: Omit<Parcel, "id" | "status"> & {
+      creatorId: string;
+      creatorRole: "merchant" | "user";
+    }
   ): Promise<Parcel> {
     if (!isValidString(parcelData.sender)) {
       throw new Error("Sender name is required.");
@@ -29,7 +32,7 @@ export class ParcelService {
 
     const newParcel: Parcel = {
       ...parcelData,
-      status: "PENDING",
+      status: "pending",
     };
 
     return this.parcelRepository.create(newParcel);
@@ -45,14 +48,18 @@ export class ParcelService {
 
   async updateParcel(
     id: string,
-    updates: Partial<Parcel>
+    updates: Partial<Parcel>,
+    creatorId: string
   ): Promise<Parcel | null> {
-    const existingParcel = await this.parcelRepository.findById(id);
+    const existingParcel = await this.parcelRepository.findByIdAndCreatorId(
+      id,
+      creatorId
+    );
     if (!existingParcel) {
       return null;
     }
 
-    const isImmutable = existingParcel.status !== "PENDING";
+    const isImmutable = existingParcel.status !== "pending";
     if (
       isImmutable &&
       (updates.deliveryAddress || updates.sender || updates.receiver)
@@ -64,10 +71,10 @@ export class ParcelService {
 
     if (updates.status && updates.status !== existingParcel.status) {
       const allowedTransitions: Record<ParcelStatus, ParcelStatus[]> = {
-        PENDING: ["IN_TRANSIT", "CANCELLED"],
-        IN_TRANSIT: ["DELIVERED", "CANCELLED"],
-        DELIVERED: [],
-        CANCELLED: [],
+        pending: ["in_transit", "cancelled"],
+        in_transit: ["delivered", "cancelled"],
+        delivered: [],
+        cancelled: [],
       };
 
       if (!allowedTransitions[existingParcel.status].includes(updates.status)) {
@@ -88,17 +95,51 @@ export class ParcelService {
       return false;
     }
 
-    if (existingParcel.status === "PENDING") {
+    if (existingParcel.status === "pending") {
       return this.parcelRepository.delete(id);
     }
 
-    if (existingParcel.status !== "CANCELLED") {
+    if (existingParcel.status !== "cancelled") {
       const result = await this.parcelRepository.update(id, {
-        status: "CANCELLED" as ParcelStatus,
+        status: "cancelled" as ParcelStatus,
       });
       return !!result;
     }
 
     return true;
+  }
+
+  async getParcelsByCreatorId(creatorId: string): Promise<Parcel[]> {
+    return this.parcelRepository.findAllByCreatorId(creatorId);
+  }
+
+  async getRiderParcels(riderId: string): Promise<Parcel[]> {
+    return this.parcelRepository.findAllByRiderId(riderId);
+  }
+
+  async updateParcelStatusByRider(
+    parcelId: string,
+    newStatus: "in_transit" | "delivered",
+    riderId: string
+  ): Promise<Parcel | null> {
+    const existingParcel = await this.parcelRepository.findByIdAndRiderId(
+      parcelId,
+      riderId
+    );
+    if (!existingParcel) {
+      throw new Error("Parcel not found or not assigned to this Rider.");
+    }
+
+    const currentStatus = existingParcel.status;
+
+    if (currentStatus === "pending" && newStatus === "in_transit") {
+      return this.parcelRepository.update(parcelId, { status: newStatus });
+    } else if (currentStatus === "in_transit" && newStatus === "delivered") {
+      return this.parcelRepository.update(parcelId, { status: newStatus });
+    } else {
+      throw new Error(
+        `Rider cannot move parcel from ${currentStatus} to ${newStatus}.`
+      );
+    }
   }
 }

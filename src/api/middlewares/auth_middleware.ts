@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-interface AuthenticatedRequest extends Request {
-  user?: { id: string; email: string };
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+    role: "admin" | "merchant" | "rider" | "user";
+  };
 }
 
 const JWT_SECRET: string = String(process.env.JWT_SECRET);
@@ -23,7 +27,11 @@ export function authenticateToken(
     if (err) {
       return res.status(403).json({ message: "Invalid or expired token." });
     }
-    req.user = decodedPayload as { id: string; email: string };
+    req.user = decodedPayload as {
+      id: string;
+      email: string;
+      role: "admin" | "merchant" | "rider" | "user";
+    };
 
     next();
   });

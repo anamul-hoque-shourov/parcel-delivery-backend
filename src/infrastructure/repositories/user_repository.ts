@@ -1,8 +1,9 @@
-import { IUserRepository } from "@/domain/repositories/i_user_repository";
+import {
+  IUserRepository,
+  SafeUser,
+} from "@/domain/repositories/i_user_repository";
 import { User } from "@/domain/entities/user_entity";
 import { UserModel, IUserModel } from "@/infrastructure/models/user_model";
-
-type SafeUser = Omit<User, "password">;
 
 export class UserRepository implements IUserRepository {
   private toSafeDomain(doc: IUserModel): SafeUser {

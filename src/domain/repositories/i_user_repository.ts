@@ -1,6 +1,6 @@
 import { User } from "@/domain/entities/user_entity";
 
-type SafeUser = Omit<User, "password">;
+export type SafeUser = Omit<User, "password">;
 
 export interface IUserRepository {
   findById(id: string): Promise<SafeUser | null>;

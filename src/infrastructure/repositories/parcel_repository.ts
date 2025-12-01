@@ -8,15 +8,25 @@ import {
 export class ParcelRepository implements IParcelRepository {
   private toDomain(doc: IParcelModel | null | any): Parcel | null {
     if (!doc) return null;
-    const { _id, sender, receiver, deliveryAddress, status } = doc.toObject
-      ? doc.toObject()
-      : doc;
+    const {
+      _id,
+      sender,
+      receiver,
+      deliveryAddress,
+      status,
+      creatorId,
+      creatorRole,
+      riderId,
+    } = doc.toObject ? doc.toObject() : doc;
     return {
       id: _id.toString(),
       sender,
       receiver,
       deliveryAddress,
       status,
+      creatorId,
+      creatorRole,
+      riderId,
     };
   }
 
@@ -47,5 +57,35 @@ export class ParcelRepository implements IParcelRepository {
   async delete(id: string): Promise<boolean> {
     const result = await ParcelModel.findByIdAndDelete(id);
     return !!result;
+  }
+
+  async findAllByCreatorId(creatorId: string): Promise<Parcel[]> {
+    const parcelDocs = await ParcelModel.find({ creatorId }).lean();
+    return parcelDocs.map((doc: any) =>
+      this.toDomain(doc as IParcelModel)
+    ) as Parcel[];
+  }
+
+  async findByIdAndCreatorId(
+    id: string,
+    creatorId: string
+  ): Promise<Parcel | null> {
+    const parcelDoc = await ParcelModel.findOne({ _id: id, creatorId }).lean();
+    return this.toDomain(parcelDoc);
+  }
+
+  async findAllByRiderId(riderId: string): Promise<Parcel[]> {
+    const parcelDocs = await ParcelModel.find({ riderId }).lean();
+    return parcelDocs.map((doc: any) =>
+      this.toDomain(doc as IParcelModel)
+    ) as Parcel[];
+  }
+
+  async findByIdAndRiderId(
+    id: string,
+    riderId: string
+  ): Promise<Parcel | null> {
+    const parcelDoc = await ParcelModel.findOne({ _id: id, riderId }).lean();
+    return this.toDomain(parcelDoc);
   }
 }

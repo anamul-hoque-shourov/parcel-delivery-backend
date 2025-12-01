@@ -1,13 +1,14 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "@/domain/entities/user_entity";
-import { IUserRepository } from "@/domain/repositories/i_user_repository";
+import {
+  IUserRepository,
+  SafeUser,
+} from "@/domain/repositories/i_user_repository";
 import { UserRepository } from "@/infrastructure/repositories/user_repository";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_strong_secret_key";
 const JWT_EXPIRATION = "1h";
-
-type SafeUser = Omit<User, "password">;
 
 export class UserService {
   private userRepository: IUserRepository;
